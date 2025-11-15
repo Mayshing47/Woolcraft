@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoolCraft - Natural Wool Meets Urban Tech</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.min.js"></script>
+    <link href="https://unpkg.com/splitting@1.0.6/dist/splitting.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --warm-white: #FEFCF8;
+            --oat: #E8DCC0;
+            --mist-grey: #B8B5AE;
+            --charcoal: #3A3835;
+            --sage: #A8B5A0;
+            --cream: #F5F2E8;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--warm-white);
+            color: var(--charcoal);
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, var(--warm-white) 0%, var(--oat) 100%);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--charcoal) 0%, var(--mist-grey) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(58, 56, 53, 0.15);
+        }
+        
+        .btn-primary {
+            background: var(--sage);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--mist-grey);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 181, 160, 0.3);
+        }
+        
+        .timeline-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease;
+        }
+        
+        .particle-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(10px);
+            background: rgba(254, 252, 248, 0.9);
+        }
+        
+        .cart-badge {
+            background: var(--sage);
+            color: white;
+            font-size: 0.75rem;
+            min-width: 1.25rem;
+            height: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gradient">WoolCraft</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-gray-900 font-medium">Home</a>
+                    <a href="products.html" class="text-gray-700 hover:text-gray-900 font-medium">Products</a>
+                    <a href="#story" class="text-gray-700 hover:text-gray-900 font-medium">Story</a>
+                    <a href="#sustainability" class="text-gray-700 hover:text-gray-900 font-medium">Sustainability</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 font-medium hidden">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span id="username-display"></span>
+                    </button>
+                    <button id="auth-btn" class="text-gray-700 hover:text-gray-900 font-medium">
+                        Sign In
+                    </button>
+                    <button id="cart-btn" class="relative p-2 text-gray-700 hover:text-gray-900">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="absolute -top-1 -right-1 cart-badge rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center hero-bg overflow-hidden">
+        <div class="particle-bg" id="particles"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="space-y-4">
+                        <h2 class="text-lg font-medium text-gray-600 tracking-wide uppercase">Natural Wool Meets Urban Tech</h2>
+                        <h1 class="text-5xl lg:text-7xl font-bold leading-tight">
+                            <span id="typed-text" class="text-gradient"></span>
+                        </h1>
+                        <p class="text-xl text-gray-600 leading-relaxed max-w-lg">
+                            Experience the perfect fusion of nature's finest materials and contemporary design. 
+                            Our merino wool sneakers offer unparalleled comfort, breathability, and sustainable style.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="products.html" class="btn-primary px-8 py-4 rounded-full font-semibold text-center">
+                            Shop Collection
+                        </a>
+                        <button id="story-btn" class="border-2 border-gray-300 px-8 py-4 rounded-full font-semibold hover:border-gray-400 transition-colors">
+                            Our Story
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                        <img src="resources/hero-sneakers.jpg" alt="Premium Wool Sneakers" 
+                             class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 bg-white rounded-2xl p-6 shadow-xl">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-gray-800">98%</div>
+                            <div class="text-sm text-gray-600">Customer Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Story Timeline -->
+    <section id="story" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Journey</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    From traditional craftsmanship to modern innovation, discover how we're revolutionizing footwear with natural materials.
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-gray-200 to-gray-400"></div>
+                
+                <div class="space-y-16">
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8 text-right">
+                            <div class="bg-cream rounded-2xl p-6 shadow-lg">
+                                <h3 class="text-2xl font-bold mb-2">2018</h3>
+                                <h4 class="text-lg font-semibold mb-3">The Beginning</h4>
+                                <p class="text-gray-600">Founded with a vision to merge traditional wool craftsmanship with contemporary sneaker design.</p>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-sage rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-1/2 pl-8"></div>
+                    </div>
+                    
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8"></div>
+                        <div class="w-8 h-8 bg-sage rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-1/2 pl-8">
+                            <div class="bg-cream rounded-2xl p-6 shadow-lg">
+                                <h3 class="text-2xl font-bold mb-2">2020</h3>
+                                <h4 class="text-lg font-semibold mb-3">Innovation Launch</h4>
+                                <p class="text-gray-600">Introduced our signature merino wool blend with temperature-regulating technology.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8 text-right">
+                            <div class="bg-cream rounded-2xl p-6 shadow-lg">
+                                <h3 class="text-2xl font-bold mb-2">2022</h3>
+                                <h4 class="text-lg font-semibold mb-3">Sustainability Focus</h4>
+                                <p class="text-gray-600">Achieved B-Corp certification and committed to carbon-neutral production.</p>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-sage rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-1/2 pl-8"></div>
+                    </div>
+                    
+                    <div class="timeline-item flex items-center">
+                        <div class="w-1/2 pr-8"></div>
+                        <div class="w-8 h-8 bg-sage rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="w-1/2 pl-8">
+                            <div class="bg-cream rounded-2xl p-6 shadow-lg">
+                                <h3 class="text-2xl font-bold mb-2">2024</h3>
+                                <h4 class="text-lg font-semibold mb-3">Global Expansion</h4>
+                                <p class="text-gray-600">Now serving customers worldwide with our revolutionary wool footwear collection.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Featured Collection</h2>
+                <p class="text-xl text-gray-600">Discover our most loved wool sneakers</p>
+            </div>
+            
+            <div class="splide" id="featured-carousel">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg">
+                                <div class="aspect-square mb-6 rounded-2xl overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/i0.wp.com/2d5db2d537d56a9e256faca789a8e11e25b14158.png" 
+                                         alt="Merino Wool Runner" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold mb-2">Merino Wool Runner</h3>
+                                    <p class="text-gray-600 mb-4">Classic low-top design with temperature-regulating merino wool</p>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-2xl font-bold">$125</span>
+                                        <div class="flex text-yellow-400">
+                                            ★★★★★
+                                        </div>
+                                    </div>
+                                    <button class="btn-primary w-full py-3 rounded-full font-semibold add-to-cart" 
+                                            data-product="Merino Wool Runner" data-price="125">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg">
+                                <div class="aspect-square mb-6 rounded-2xl overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/us.baabuk.com/d380c16dc9e8805235bbdf279778689d80ad9f9d.jpg" 
+                                         alt="Urban Wooler High" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold mb-2">Urban Wooler High</h3>
+                                    <p class="text-gray-600 mb-4">High-top silhouette with premium felted wool construction</p>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-2xl font-bold">$145</span>
+                                        <div class="flex text-yellow-400">
+                                            ★★★★★
+                                        </div>
+                                    </div>
+                                    <button class="btn-primary w-full py-3 rounded-full font-semibold add-to-cart" 
+                                            data-product="Urban Wooler High" data-price="145">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg">
+                                <div class="aspect-square mb-6 rounded-2xl overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/cdn.shopify.com/22a4fd11e55c02548f2d3eeb0653cfb3321e036a.jpg" 
+                                         alt="Wool Knit Slip-On" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold mb-2">Wool Knit Slip-On</h3>
+                                    <p class="text-gray-600 mb-4">Effortless style with elastic lacing and breathable wool mesh</p>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-2xl font-bold">$110</span>
+                                        <div class="flex text-yellow-400">
+                                            ★★★★★
+                                        </div>
+                                    </div>
+                                    <button class="btn-primary w-full py-3 rounded-full font-semibold add-to-cart" 
+                                            data-product="Wool Knit Slip-On" data-price="110">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg">
+                                <div class="aspect-square mb-6 rounded-2xl overflow-hidden">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/cdn.prod.website-files.com/ed0eba32873cb395ad1fa692b228b6226a85b6fc.webp" 
+                                         alt="Cashmere Blend Low" class="w-full h-full object-cover">
+                                </div>
+                                <div class="text-center">
+                                    <h3 class="text-xl font-bold mb-2">Cashmere Blend Low</h3>
+                                    <p class="text-gray-600 mb-4">Luxurious cashmere-wool blend for ultimate comfort</p>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-2xl font-bold">$165</span>
+                                        <div class="flex text-yellow-400">
+                                            ★★★★★
+                                        </div>
+                                    </div>
+                                    <button class="btn-primary w-full py-3 rounded-full font-semibold add-to-cart" 
+                                            data-product="Cashmere Blend Low" data-price="165">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sustainability Metrics -->
+    <section id="sustainability" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Commitment</h2>
+                <p class="text-xl text-gray-600">Measuring our impact on the planet</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-sage rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">100%</h3>
+                    <p class="text-gray-600">Ethically Sourced Wool</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-sage rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Carbon</h3>
+                    <p class="text-gray-600">Neutral Production</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-sage rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Zero</h3>
+                    <p class="text-gray-600">Waste Manufacturing</p>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-3xl p-8">
+                <div id="sustainability-chart" style="height: 300px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Stay Connected</h2>
+            <p class="text-xl text-gray-600 mb-8">Get updates on new releases and sustainable fashion insights</p>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Enter your email" 
+                       class="flex-1 px-6 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sage">
+                <button class="btn-primary px-8 py-4 rounded-full font-semibold whitespace-nowrap">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">WoolCraft</h3>
+                <p class="text-gray-400 mb-8">Natural wool meets urban tech</p>
+                <div class="border-t border-gray-700 pt-8">
+                    <p class="text-gray-400">&copy; 2024 WoolCraft. All rights reserved. Crafted with natural materials and sustainable practices.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- User Menu Dropdown -->
+    <div id="user-menu" class="fixed top-16 right-4 w-64 bg-white rounded-2xl shadow-2xl p-4 hidden z-50">
+        <div class="space-y-2">
+            <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                My Profile
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                </svg>
+                My Orders
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                Wishlist
+            </a>
+            <hr class="my-2">
+            <button id="logout-btn" class="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-6 border-b">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold">Shopping Cart</h3>
+                <button id="close-cart" class="p-2 hover:bg-gray-100 rounded-full">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+            <div class="text-center text-gray-500 py-12">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                </svg>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="border-t p-6">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-lg font-semibold">Total:</span>
+                <span id="cart-total" class="text-2xl font-bold">$0</span>
+            </div>
+            <a href="cart.html" class="btn-primary w-full py-3 rounded-full font-semibold text-center block">
+                Checkout
+            </a>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
